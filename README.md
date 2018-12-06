@@ -59,8 +59,8 @@ print(Data)
           不需驗證  
           取得相片簿(專輯)中的某圖片詳細資料
   *  ### 畫廊 Gallery
-  *  ### 圖片 Image(image, auth=False, **keyargs)
-       *  #### Image_Upload
+  *  ### 圖片 Image
+       *  #### Image_Upload(image, auth=False, Optional)
           不需驗證 auth=False、需驗證 auth=True  
           上傳圖片  
           (Optional)  
