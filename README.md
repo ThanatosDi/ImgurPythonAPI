@@ -1,7 +1,7 @@
-# ImgurPythonAPI
+# ImgurPythonlibrary
 
 ## 安裝
-   * 安裝套件  
+   * 安裝必要套件  
     `python -m pip install -r requirements.txt`  
     
    * 匯入API  
