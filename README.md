@@ -47,6 +47,20 @@ print(Data)
      *  #### Account_Images()
           需驗證  
           取得帳號的圖片
+     *  #### Account_Block_Create('username')
+          需驗證  
+          封鎖一個使用者
+     *  #### Account_Block_Delete('username')
+          需驗證  
+          解除封鎖一個使用者
+     *  #### Account_Gallery_Favorites('username', page:int=None, favoritesSort:str='newest')
+          不需驗證  
+          取得用戶在圖庫中收藏的圖像  
+          (Optional)  
+           * page
+              integer - allows you to set the page number so you don't have to retrieve all the data at once.
+           * favoritesSort
+               `oldest`, or `newest`. Defaults to `newest`.
   *  ### 評論 Comment
   *  ### 相片簿(專輯) Album
      *  #### Album('album_id')
