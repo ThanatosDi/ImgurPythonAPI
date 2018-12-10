@@ -103,21 +103,30 @@ class Imgur(object):
         resp = self.make_request('GET', endpoint, headers=header)
         return resp['data']
 
-    def Account_Gallery_Favorites(self, username, page:int='', favoritesSort:str='newest'):
+    def Account_Gallery_Favorites(self, username, page:int='', sort:str='newest'):
         """Return the images the user has favorited in the gallery.\n
         (optional)\n
         page            : integer - allows you to set the page number so you don't have to retrieve all the data at once.\n
-        favoriteSort    : oldest, or newest. Defaults to newest"""
-        endpoint = f'3/account/{username}/gallery_favorites/{page}/{favoritesSort}'
+        sort    : oldest, or newest. Defaults to newest"""
+        endpoint = f'3/account/{username}/gallery_favorites/{page}/{sort}'
+        allow_sort = ['oldest', 'newest']
+        if sort not in allow_sort:
+            raise ImgurClientParameterKeyNotFound(sort)
         header = {
             'Authorization': f'Client-ID {self.client_id}'
         }
         resp = self.make_request('GET', endpoint, headers=header)
         return resp['data']
 
-    def Account_Favorites(self, username, page:int='', favoritesSort:str='newest'):
-        """Returns the users favorited images, only accessible if you're logged in as the user."""
-        endpoint = f'3/account/{username}/favorites/{page}/{favoritesSort}'
+    def Account_Favorites(self, username, page:int='', sort:str='newest'):
+        """Returns the users favorited images, only accessible if you're logged in as the user.\n
+        (optional)\n
+        page            : integer - allows you to set the page number so you don't have to retrieve all the data at once.\n
+        sort    : oldest, or newest. Defaults to newest"""
+        endpoint = f'3/account/{username}/favorites/{page}/{sort}'
+        allow_sort = ['oldest', 'newest']
+        if sort not in allow_sort:
+            raise ImgurClientParameterKeyNotFound(sort)
         if self.access_token is None:
             self.Refresh_token()
         header = {
@@ -125,6 +134,24 @@ class Imgur(object):
         }
         resp = self.make_request('GET', endpoint, headers=header)
         return resp['data']
+
+    def Account_Submissions(self, username, page:int=1, sort:str='newest'):
+        """Return the images a user has submitted to the gallery. You can add sorting as well after paging. Sorts can be: newest (default), oldest, worst, best.\n
+        (optional)\n
+        page            : integer - allows you to set the page number so you don't have to retrieve all the data at once.\n
+        sort    : oldest, or newest. Defaults to newest"""
+        endpoint = f'3/account/{username}/submissions/{page}/{sort}'
+        allow_sort = ['oldest', 'newest']
+        if sort not in allow_sort:
+            raise ImgurClientParameterKeyNotFound(sort)
+        header = {
+            'Authorization': f'Client-ID {self.client_id}'
+        }
+        resp = self.make_request('GET', endpoint, headers=header)
+        return resp['data']
+
+    
+
 # Album
     def Album(self, album_id):
         """Get additional information about an album."""
