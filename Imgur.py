@@ -103,7 +103,7 @@ class Imgur(object):
         resp = self.make_request('GET', endpoint, headers=header)
         return resp['data']
 
-    def Account_Gallery_Favorites(self, username, page:int=None, favoritesSort:str='newest'):
+    def Account_Gallery_Favorites(self, username, page:int='', favoritesSort:str='newest'):
         """Return the images the user has favorited in the gallery.\n
         (optional)\n
         page            : integer - allows you to set the page number so you don't have to retrieve all the data at once.\n
@@ -114,7 +114,17 @@ class Imgur(object):
         }
         resp = self.make_request('GET', endpoint, headers=header)
         return resp['data']
-        
+
+    def Account_Favorites(self, username, page:int='', favoritesSort:str='newest'):
+        """Returns the users favorited images, only accessible if you're logged in as the user."""
+        endpoint = f'3/account/{username}/favorites/{page}/{favoritesSort}'
+        if self.access_token is None:
+            self.Refresh_token()
+        header = {
+            'Authorization': f"Bearer {self.access_token}"
+        }
+        resp = self.make_request('GET', endpoint, headers=header)
+        return resp['data']
 # Album
     def Album(self, album_id):
         """Get additional information about an album."""
