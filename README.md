@@ -4,7 +4,7 @@
    * 安裝必要套件  
     `python -m pip install -r requirements.txt`  
     
-   * 匯入API  
+   * 匯入library  
     `from ImgurPythonlibrary.Imgur import Imgur`
 ## 使用
 當操作不需要認證時 refresh_token 可以保持為空，但需要認證的操作就需要 refresh_token  
