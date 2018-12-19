@@ -9,8 +9,10 @@ class Imgur(object):
         self.client_id = client_id
         self.client_secret = client_secret
         self.refresh_token = refresh_token
-        self.access_token = None
+        self.access_token  = None
         self.state = state
+        if self.refresh_token is not None:
+            self.access_token = self.token()
 
     def make_request(self, method, endpoint, data=None, headers=None):
         resp = requests.request(
@@ -28,8 +30,8 @@ class Imgur(object):
         endpoint = f'oauth2/authorize?client_id={client_id}&response_type={response_type}&state={state}'
         return print(self.API+endpoint)
 
-    def Refresh_token(self):
-        """ Given a user's refresh token """
+    def token(self):
+        """ Given a user's access token """
         if self.refresh_token is None:
             raise ImugrClientMissRefreshToken
         endpoint = 'oauth2/token/'
@@ -40,8 +42,7 @@ class Imgur(object):
                   }
         resp = self.make_request('POST', endpoint, data=params)
         self.access_token = resp['access_token']
-        self.refresh_token = resp['refresh_token']
-        return resp
+        return resp['access_token']
 # Account
 
     def Account(self, username):
@@ -60,7 +61,7 @@ class Imgur(object):
         """List all accounts being blocked"""
         endpoint = f'3/account/{username}/block'
         if self.access_token is None:
-            self.Refresh_token()
+            self.token()
         header = {
             'Authorization': f"Bearer {self.access_token}",
             'Accept': "application/vnd.api+json"
@@ -72,7 +73,7 @@ class Imgur(object):
         """Block a user."""
         endpoint = f'account/v1/{username}/block'
         if self.access_token is None:
-            self.Refresh_token()
+            self.token()
         header = {
             'Authorization': f"Bearer {self.access_token}",
             'Accept': "application/vnd.api+json"
@@ -84,7 +85,7 @@ class Imgur(object):
         """ Unblock a user. """
         endpoint = f'account/v1/{username}/block'
         if self.access_token is None:
-            self.Refresh_token()
+            self.token()
         header = {
             'Authorization': f"Bearer {self.access_token}",
             'Accept': "application/vnd.api+json"
@@ -96,14 +97,14 @@ class Imgur(object):
         """Get request all the images for the account that is currently authenticated. """
         endpoint = '3/account/me/images'
         if self.access_token is None:
-            self.Refresh_token()
+            self.token()
         header = {
             'Authorization': f"Bearer {self.access_token}"
         }
         resp = self.make_request('GET', endpoint, headers=header)
         return resp['data']
 
-    def Account_Gallery_Favorites(self, username, page:int='', sort:str='newest'):
+    def Account_Gallery_Favorites(self, username, page: int , sort: str = 'newest'):
         """Return the images the user has favorited in the gallery.\n
         (optional)\n
         page            : integer - allows you to set the page number so you don't have to retrieve all the data at once.\n
@@ -118,7 +119,7 @@ class Imgur(object):
         resp = self.make_request('GET', endpoint, headers=header)
         return resp['data']
 
-    def Account_Favorites(self, username, page:int='', sort:str='newest'):
+    def Account_Favorites(self, username, page: int , sort: str = 'newest'):
         """Returns the users favorited images, only accessible if you're logged in as the user.\n
         (optional)\n
         page            : integer - allows you to set the page number so you don't have to retrieve all the data at once.\n
@@ -128,14 +129,14 @@ class Imgur(object):
         if sort not in allow_sort:
             raise ImgurClientParameterKeyNotFound(sort)
         if self.access_token is None:
-            self.Refresh_token()
+            self.token()
         header = {
             'Authorization': f"Bearer {self.access_token}"
         }
         resp = self.make_request('GET', endpoint, headers=header)
         return resp['data']
 
-    def Account_Submissions(self, username, page:int=1, sort:str='newest'):
+    def Account_Submissions(self, username, page: int , sort: str = 'newest'):
         """Return the images a user has submitted to the gallery. You can add sorting as well after paging. Sorts can be: newest (default), oldest, worst, best.\n
         (optional)\n
         page            : integer - allows you to set the page number so you don't have to retrieve all the data at once.\n
@@ -150,9 +151,10 @@ class Imgur(object):
         resp = self.make_request('GET', endpoint, headers=header)
         return resp['data']
 
-    
 
 # Album
+
+
     def Album(self, album_id):
         """Get additional information about an album."""
         endpoint = f'3/album/{album_id}'
@@ -162,18 +164,11 @@ class Imgur(object):
         resp = self.make_request('GET', endpoint, headers=header)
         return resp['data']
 
-    def Album_Images(self, album_id):
-        """Return all of the images in the album."""
+    def Album_Images(self, album_id, image_id:str = None):
+        """If image_id is None will return all of the images in the album, else will return information about an image in an album. """
         endpoint = f'3/album/{album_id}/images'
-        header = {
-            'Authorization': f'Client-ID {self.client_id}'
-        }
-        resp = self.make_request('GET', endpoint, headers=header)
-        return resp['data']
-
-    def Album_Images_Detail(self, album_id, image_id):
-        """Get information about an image in an album"""
-        endpoint = f'3/album/{album_id}/image/{image_id}'
+        if image_id:
+            endpoint += f'/{image_id}'
         header = {
             'Authorization': f'Client-ID {self.client_id}'
         }
@@ -181,6 +176,15 @@ class Imgur(object):
         return resp['data']
 
 # Image
+    def Image(self, image):
+        """ Get information about an image. """
+        endpoint = f'3/image/{image}'
+        header = {
+            'Authorization': f'Client-ID {self.client_id}'
+        }
+        resp = self.make_request('GET', endpoint, headers=header)
+        return resp['data']
+
     def Image_Upload(self, image, auth=False, **keyargs):
         """Upload a new image.\n
 If non-authorization "auth" set "False".\n
@@ -197,7 +201,8 @@ If image is "file" first use binaryfile convert to binary.\n (optional)
         endpoint = '3/image'
         Authorization = f'Client-ID {self.client_id}'
         if auth:
-            self.Refresh_token()
+            if self.access_token is None:
+                self.token()
             Authorization = f'Bearer {self.access_token}'
         header = {
             'Authorization': Authorization
@@ -208,24 +213,42 @@ If image is "file" first use binaryfile convert to binary.\n (optional)
             'POST', endpoint, headers=header, data=params)
         return resp['data']
 
-    def Image_Delete(self, image_id):
-        """Deletes an image. Need to authorization"""
-        endpoint = f'3/image/{image_id}'
-        self.Refresh_token()
-        header = {
-            'Authorization': f'Bearer {self.access_token}'
-        }
+    def Image_Delete(self, image, auth=False):
+        """Deletes an image"""
+        endpoint = f'3/image/{image}'
+        if auth:
+            header = {
+                'Authorization': f'Client-ID {self.client_id}'
+            }
+        else:
+            if self.access_token is None:
+                self.token()
+            header = {
+                'Authorization': f'Bearer {self.access_token}'
+            }
         resp = self.make_request('DELETE', endpoint, headers=header)
-        return resp
+        return resp['data']
 
-    def Image_Delete_AM(self, image_deletehash):
-        """Deletes an image. Un-authorization, but need image's deletehash."""
-        endpoint = f'3/image/{image_deletehash}'
+    def Update_Image_Information(self, image, auth=False, title=None, description=None):
+        """ Updates the title or description of an image. \nIf auth is False, image is ImageDeleteHash."""
+        endpoint = f'3/image/{image}'
         header = {
-            'Authorization': f'Client-ID {self.client_id}'
-        }
-        resp = self.make_request('DELETE', endpoint, headers=header)
-        return resp
+                'Authorization': f'Client-ID {self.client_id}'
+            }
+        if auth:
+            if self.access_token is None:
+                self.token()
+            header = {
+                'Authorization': f'Bearer {self.access_token}'
+            }
+        params = {}
+        if title is not None:
+            params['title'] = title
+        if description is not None:
+            params['description'] = description
+        resp = self.make_request(
+            'POST', endpoint, headers=header, data=params)
+        return resp['data']
 
     @staticmethod
     def binaryfile(file):
