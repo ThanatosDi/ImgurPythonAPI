@@ -175,6 +175,15 @@ class Imgur(object):
         resp = self.make_request('GET', endpoint, headers=header)
         return resp['data']
 
+    def Album_Creation(self, **keyargs):
+        allow_key = ['ids[]','deletehashes[]','title','description','privacy','layout','cover']
+        allow_privacy = ['public','hidden']
+        allow_layout = ['blog','grid','horizontal','vertical']
+        error_key = [key for key in keyargs.keys() if key not in allow_key]
+        if error_key:
+            raise ImgurClientParameterKeyNotFound(', '.join(error_key))
+        endpoint = f'3/album'
+
 # Image
     def Image(self, image):
         """ Get information about an image. """
