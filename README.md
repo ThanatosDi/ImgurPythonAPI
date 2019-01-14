@@ -84,7 +84,7 @@ print(Data)
               integer - allows you to set the page number so you don't have to retrieve all the data at once.
            * sort
                `oldest`, or `newest`. Defaults to `newest`.
-     *  #### Account Favorites('username', page: int , sort: str = 'newest')
+     *  #### Account_Favorites('username', page: int , sort: str = 'newest')
           需驗證
           取得用戶收藏的圖像
           (Optional)
@@ -92,7 +92,7 @@ print(Data)
               integer - allows you to set the page number so you don't have to retrieve all the data at once.
            * sort
                `oldest`, or `newest`. Defaults to `newest`.
-     *  #### Account Submissions('username', page: int , sort: str = 'newest')
+     *  #### Account_Submissions('username', page: int , sort: str = 'newest')
           不需驗證  
           取得用戶已提交到圖庫的圖像
           (Optional)
@@ -124,7 +124,7 @@ print(Data)
                 The title of the image.
              * description  
                 The description of the image.
-       *  #### Image_Delete(image, auth=False)
+       *  #### Image_Delete(image(id or deleteHash), auth=False)
           不需驗證 auth=False、需驗證 auth=True  
-          不需驗證需要 delete Hash 有驗證只需要 image id即可  
+          不需驗證需要 deleteHash 有驗證只需要 image id即可  
           刪除指定圖片
