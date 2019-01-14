@@ -217,14 +217,14 @@ If image is "file" first use binaryfile convert to binary.\n (optional)
         """Deletes an image"""
         endpoint = f'3/image/{image}'
         if auth:
-            header = {
-                'Authorization': f'Client-ID {self.client_id}'
-            }
-        else:
             if self.access_token is None:
                 self.token()
             header = {
                 'Authorization': f'Bearer {self.access_token}'
+            }
+        else:
+            header = {
+                'Authorization': f'Client-ID {self.client_id}'
             }
         resp = self.make_request('DELETE', endpoint, headers=header)
         return resp['data']
