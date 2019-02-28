@@ -14,7 +14,7 @@ client_id = '123456789'
 client_secret = '123456789asdzxcqwe123456'
 Client = Imgur(client_id, client_secret)
 Data = Client.Album('EPGUzgm')
-Data.HTTPClient.close(client.loop)
+Client.HTTPClient.close(Client.loop)
 print(Data)
 ```
 * 需要認證
@@ -24,7 +24,7 @@ client_secret = '123456789asdzxcqwe123456'
 refresh_token = '5648444sd8g4sd8g445asf88awf44'
 Client = Imgur(client_id, client_secret, refresh_token)
 Data = Client.Account('username')
-Data.HTTPClient.close(client.loop)
+Client.HTTPClient.close(Client.loop)
 print(Data)
 ```
 ## Functions
