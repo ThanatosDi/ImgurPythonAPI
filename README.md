@@ -5,7 +5,7 @@
     `python -m pip install -r requirements.txt`  
     
    * 匯入library  
-    `from ImgurPythonlibrary.Imgur import Imgur`
+    `from ImgurPythonlibrary.ImgurAsync import Imgur, HTTPClient`
 ## 使用
 當操作不需要認證時 refresh_token 可以保持為空，但需要認證的操作就需要 refresh_token  
 * 不需認證
@@ -14,6 +14,7 @@ client_id = '123456789'
 client_secret = '123456789asdzxcqwe123456'
 Client = Imgur(client_id, client_secret)
 Data = Client.Album('EPGUzgm')
+Data.HTTPClient.close(client.loop)
 print(Data)
 ```
 * 需要認證
@@ -23,6 +24,7 @@ client_secret = '123456789asdzxcqwe123456'
 refresh_token = '5648444sd8g4sd8g445asf88awf44'
 Client = Imgur(client_id, client_secret, refresh_token)
 Data = Client.Account('username')
+Data.HTTPClient.close(client.loop)
 print(Data)
 ```
 ## Functions
